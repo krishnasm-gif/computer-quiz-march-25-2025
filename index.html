@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>100 Basic Computer Terms Quiz</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h1 { text-align: center; color: #2c3e50; }
+    
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .progress {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #3498db;
+      margin-bottom: 10px;
+    }
+    #timer {
+      text-align: center;
+      font-size: 1.9rem;
+      font-weight: bold;
+      padding: 12px;
+      background: #fff3cd;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    #timer.low {
+      color: #e74c3c;
+      background: #f8d7da;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 0%{transform:scale(1);} 50%{transform:scale(1.06);} 100%{transform:scale(1);} }
+
+    #question-text h2 {
+      font-size: 1.65rem;
+      color: #2c3e50;
+    }
+
+    .option {
+      display: block;
+      width: 100%;
+      padding: 16px 20px;
+      margin: 10px 0;
+      background: #f0f7ff;
+      border: 2px solid #3498db;
+      border-radius: 8px;
+      font-size: 1.15rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .option:hover {
+      background: #e8f1ff;
+      transform: translateY(-2px);
+    }
+    .option-correct { background: #d4edda !important; border-color: #27ae60 !important; }
+    .option-wrong   { background: #f8d7da !important; border-color: #e74c3c !important; }
+
+    .feedback {
+      padding: 18px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 1.2rem;
+    }
+
+    .score-bar {
+      background: #ecf0f1;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .score-bar span { color: #27ae60; }
+    .score-bar span.wrong { color: #e74c3c; }
+
+    .controls button {
+      font-size: 1.2rem;
+      padding: 12px 32px;
+      margin: 8px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .next-btn { background: #3498db; color: white; }
+    .start-btn, .restart-btn { 
+      background: #2ecc71; 
+      color: white; 
+      font-size: 1.4rem; 
+      padding: 16px 50px; 
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>100 Basic Computer Terms Quiz</h1>
+
+  <!-- Start Screen -->
+  <div id="start-screen" class="screen active">
+    <p style="text-align:center; font-size:1.2rem;">
+      Welcome! Questions and options are shuffled every time.<br>
+      <strong>20 seconds</strong> per question • Total 100 questions
+    </p>
+    <div class="controls">
+      <button class="start-btn" onclick="startQuiz()">🚀 Start Quiz</button>
+    </div>
+  </div>
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen" class="screen">
+    <div class="progress">Question <span id="q-number">1</span> of 100</div>
+    <div id="timer">20 seconds left</div>
+    
+    <div id="question-text"></div>
+    
+    <div id="options"></div>
+    
+    <div id="feedback" class="feedback" style="display:none;"></div>
+    
+    <div class="score-bar">
+      Correct: <span id="correct-count">0</span> &nbsp;&nbsp;&nbsp;
+      Wrong: <span id="wrong-count" class="wrong">0</span>
+    </div>
+    
+    <div class="controls">
+      <button id="next-btn" class="next-btn" onclick="nextQuestion()" style="display:none;">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- End Screen -->
+  <div id="end-screen" class="screen" style="text-align:center;">
+    <h2>🎉 Quiz Completed!</h2>
+    <p style="font-size:3rem; font-weight:bold; margin:20px 0;" id="final-score">0 / 100</p>
+    <p id="final-message" style="font-size:1.4rem;"></p>
+    <div class="controls">
+      <button class="restart-btn" onclick="restartQuiz()">🔄 Restart Quiz</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const terms = [
+  {n:1, t:"Computer", d:"An electronic device that can store, process, and retrieve data according to instructions (programs).", e:"Laptop, desktop PC, smartphone (all are types of computers)"},
+  {n:2, t:"Hardware", d:"The physical parts of a computer that you can touch.", e:"Monitor, keyboard, mouse, CPU, RAM, hard disk"},
+  {n:3, t:"Software", d:"The programs and instructions that tell hardware what to do.", e:"Windows 11, Google Chrome, MS Word, Photoshop"},
+  {n:4, t:"Operating System", d:"Software that manages hardware, resources and provides services for applications.", e:"Windows, macOS, Linux, Android, iOS"},
+  {n:5, t:"CPU", d:"Central Processing Unit – the 'brain' that executes instructions.", e:"Intel Core i7, AMD Ryzen 9, Apple M2"},
+  {n:6, t:"RAM", d:"Random Access Memory – temporary fast storage that loses data when power is off.", e:"8 GB, 16 GB, 32 GB DDR4/DDR5 memory"},
+  {n:7, t:"Hard Disk Drive (HDD)", d:"Storage device using spinning magnetic disks.", e:"1 TB Seagate Barracuda, 2 TB Western Digital Blue"},
+  {n:8, t:"Solid State Drive (SSD)", d:"Storage using flash memory – much faster than HDD.", e:"500 GB NVMe SSD, 1 TB Samsung 970 EVO"},
+  {n:9, t:"Bit", d:"Smallest unit of digital information – 0 or 1.", e:"One pixel color might use 24 bits (true color)"},
+  {n:10,t:"Byte", d:"Group of 8 bits.", e:"One character (like 'A') usually takes 1 byte"},
+  {n:11,t:"Kilobyte (KB)", d:"Approximately 1,000 bytes (exactly 1,024 bytes).", e:"A short text file ≈ 5–50 KB"},
+  {n:12,t:"Megabyte (MB)", d:"Approximately 1 million bytes (1,024 KB).", e:"A 3-minute MP3 song ≈ 3–5 MB"},
+  {n:13,t:"Gigabyte (GB)", d:"Approximately 1 billion bytes.", e:"Modern movies ≈ 4–12 GB, Windows 11 ≈ 25 GB"},
+  {n:14,t:"Terabyte (TB)", d:"Approximately 1 trillion bytes.", e:"Large game libraries or backup drives – 4 TB, 8 TB"},
+  {n:15,t:"Motherboard", d:"Main circuit board that connects all hardware components.", e:"ASUS ROG Strix, MSI B550 Tomahawk"},
+  {n:16,t:"GPU", d:"Graphics Processing Unit – handles rendering of images/videos.", e:"NVIDIA RTX 4070, AMD Radeon RX 7900 XT"},
+  {n:17,t:"Input Device", d:"Hardware used to enter data into the computer.", e:"Keyboard, mouse, microphone, webcam, scanner"},
+  {n:18,t:"Output Device", d:"Hardware that displays or produces results.", e:"Monitor, printer, speakers, headphones"},
+  {n:19,t:"Monitor", d:"Display screen that shows visual output.", e:"24-inch Full HD IPS, 32-inch 4K curved"},
+  {n:20,t:"Keyboard", d:"Device for typing text and commands.", e:"QWERTY, mechanical RGB, wireless membrane"},
+  {n:21,t:"Mouse", d:"Pointing device used to move cursor and select items.", e:"Logitech MX Master, gaming mouse with 16000 DPI"},
+  {n:22,t:"File", d:"A collection of data stored under a single name.", e:"photo.jpg, report.docx, song.mp3"},
+  {n:23,t:"Folder / Directory", d:"Container used to organize files.", e:"Documents, Downloads, Photos, Music"},
+  {n:24,t:"Filename Extension", d:"Letters after the dot that indicate file type.", e:".pdf, .jpg, .exe, .mp4, .xlsx"},
+  {n:25,t:"Browser", d:"Software used to access and view websites.", e:"Google Chrome, Firefox, Edge, Safari"},
+  {n:26,t:"Website", d:"Collection of web pages accessible via the internet.", e:"google.com, wikipedia.org, youtube.com"},
+  {n:27,t:"URL", d:"Uniform Resource Locator – web address.", e:"https://www.example.com/page1"},
+  {n:28,t:"HTTP / HTTPS", d:"Protocol used to transfer web pages (HTTPS is secure).", e:"https:// is encrypted, http:// is not"},
+  {n:29,t:"IP Address", d:"Unique numerical label assigned to each device on a network.", e:"192.168.1.105, 8.8.8.8 (Google DNS)"},
+  {n:30,t:"Wi-Fi", d:"Wireless networking technology using radio waves.", e:"Connecting phone to home router without cable"},
+  {n:31,t:"Router", d:"Device that forwards data between networks and provides Wi-Fi.", e:"TP-Link Archer, ASUS RT-AX86U"},
+  {n:32,t:"Modem", d:"Device that connects your network to your ISP.", e:"Converts ISP signal to usable internet"},
+  {n:33,t:"Cloud Storage", d:"Data stored on remote servers accessed over internet.", e:"Google Drive, Dropbox, OneDrive, iCloud"},
+  {n:34,t:"Virus", d:"Malicious software that replicates and harms system.", e:"WannaCry ransomware (2017)"},
+  {n:35,t:"Antivirus", d:"Software that detects and removes malware.", e:"Windows Defender, Bitdefender, Malwarebytes"},
+  {n:36,t:"Firewall", d:"Security system that monitors and controls network traffic.", e:"Blocks unauthorized incoming connections"},
+  {n:37,t:"Password", d:"Secret sequence of characters used for authentication.", e:"P@ssw0rd2025! (strong), 123456 (weak)"},
+  {n:38,t:"Backup", d:"Copy of data created to protect against loss.", e:"External HDD backup, Google One subscription"},
+  {n:39,t:"Binary", d:"Number system using only 0 and 1.", e:"1010₂ = 10₁₀ (decimal)"},
+  {n:40,t:"Algorithm", d:"Step-by-step procedure to solve a problem.", e:"Bubble sort, searching for name in phonebook"},
+  {n:41,t:"Program", d:"Set of instructions written in a programming language.", e:"Calculator app, video game, web browser"},
+  {n:42,t:"Coding", d:"Writing instructions in a programming language.", e:"print('Hello') in Python"},
+  {n:43,t:"Bug", d:"Error or flaw in a computer program.", e:"App crashes when you click 'Save'"},
+  {n:44,t:"Debugging", d:"Process of finding and fixing bugs.", e:"Using breakpoints in VS Code"},
+  {n:45,t:"Database", d:"Organized collection of structured data.", e:"MySQL school records, MongoDB product catalog"},
+  {n:46,t:"Spreadsheet", d:"Application for storing data in rows & columns.", e:"Microsoft Excel, Google Sheets"},
+  {n:47,t:"Cell", d:"Single box in a spreadsheet (intersection of row & column).", e:"A1, B5, Z100"},
+  {n:48,t:"Pixel", d:"Smallest unit of a digital image.", e:"A 1920×1080 screen has ≈ 2 million pixels"},
+  {n:49,t:"Resolution", d:"Number of pixels in width × height.", e:"1920×1080 (Full HD), 3840×2160 (4K)"},
+  {n:50,t:"Cache", d:"Small, fast memory that stores frequently used data.", e:"CPU L1/L2/L3 cache, browser cache"},
+  {n:51,t:"BIOS / UEFI", d:"Firmware that initializes hardware during startup.", e:"Press Del/F2 to enter BIOS setup"},
+  {n:52,t:"Boot", d:"Process of starting up a computer.", e:"From power-on → Windows login screen"},
+  {n:53,t:"Driver", d:"Software that allows OS to communicate with hardware.", e:"NVIDIA graphics driver, printer driver"},
+  {n:54,t:"Update", d:"Newer version of software that fixes bugs or adds features.", e:"Windows Update, Chrome update"},
+  {n:55,t:"Encryption", d:"Converting data into secret code to prevent unauthorized access.", e:"WhatsApp end-to-end encryption"},
+  {n:56,t:"Decryption", d:"Converting encrypted data back to readable form.", e:"Entering password to open encrypted ZIP"},
+  {n:57,t:"Clipboard", d:"Temporary storage for copied/cut data.", e:"Ctrl+C → Ctrl+V pastes text/image"},
+  {n:58,t:"Task Manager", d:"Utility to monitor and control running processes.", e:"Ctrl+Shift+Esc on Windows"},
+  {n:59,t:"File Compression", d:"Reducing file size for storage/transmission.", e:"ZIP, RAR, 7z formats"},
+  {n:60,t:"Extract / Unzip", d:"Restoring original files from compressed archive.", e:"Right-click → Extract Here"},
+  {n:61,t:"Search Engine", d:"Website that indexes and finds web content.", e:"Google, Bing, DuckDuckGo"},
+  {n:62,t:"Bookmark", d:"Saved link to a webpage for quick access.", e:"Ctrl+D in browser"},
+  {n:63,t:"Tab", d:"Browser feature to open multiple pages in one window.", e:"Ctrl+T opens new tab"},
+  {n:64,t:"Incognito / Private Mode", d:"Browsing without saving history/cookies.", e:"Ctrl+Shift+N in Chrome"},
+  {n:65,t:"Cookie", d:"Small text file stored by websites on your device.", e:"Remembers login, shopping cart items"},
+  {n:66,t:"Cache (Browser)", d:"Stores webpage files to load sites faster.", e:"Clear cache when site looks broken"},
+  {n:67,t:"Phishing", d:"Fraudulent attempt to get sensitive information.", e:"Fake bank email asking for password"},
+  {n:68,t:"Malware", d:"Any software intentionally designed to cause harm.", e:"Virus, ransomware, spyware, trojan"},
+  {n:69,t:"Ransomware", d:"Malware that encrypts files and demands payment.", e:"Locky, Ryuk, LockBit"},
+  {n:70,t:"Spyware", d:"Software that secretly gathers user information.", e:"Keylogger recording passwords"},
+  {n:71,t:"Trojan", d:"Malware disguised as legitimate software.", e:"Fake antivirus that installs virus"},
+  {n:72,t:"Two-Factor Authentication (2FA)", d:"Extra security step beyond password.", e:"Password + SMS code / authenticator app"},
+  {n:73,t:"VPN", d:"Virtual Private Network – encrypted tunnel for internet traffic.", e:"NordVPN, ExpressVPN, ProtonVPN"},
+  {n:74,t:"LAN", d:"Local Area Network – small area network (home/office).", e:"Computers + printer in one house"},
+  {n:75,t:"WAN", d:"Wide Area Network – large network (internet itself).", e:"Connecting offices in different cities"},
+  {n:76,t:"Ethernet", d:"Wired networking technology using cables.", e:"Cat5e, Cat6, Cat7 cables"},
+  {n:77,t:"Bandwidth", d:"Maximum data transfer rate over a connection.", e:"100 Mbps, 1 Gbps internet plan"},
+  {n:78,t:"Download", d:"Transferring data from internet to your device.", e:"Downloading movie from Netflix"},
+  {n:79,t:"Upload", d:"Transferring data from your device to internet.", e:"Uploading photo to Instagram"},
+  {n:80,t:"Streaming", d:"Watching/listening to media in real-time over internet.", e:"YouTube, Spotify, Netflix"},
+  {n:81,t:"Buffer", d:"Temporary memory area used during streaming.", e:"Buffering… seen on slow connections"},
+  {n:82,t:"QR Code", d:"Two-dimensional barcode readable by smartphones.", e:"Scan to pay via Google Pay / PhonePe"},
+  {n:83,t:"Screenshot", d:"Captured image of screen contents.", e:"PrtSc / Win+Shift+S on Windows"},
+  {n:84,t:"Wallpaper", d:"Background image on desktop or phone.", e:"Nature photo, abstract design"},
+  {n:85,t:"Icon", d:"Small graphical image representing file/app.", e:"Recycle Bin, Chrome browser icon"},
+  {n:86,t:"Desktop", d:"Main working area of graphical user interface.", e:"Where icons, shortcuts and wallpaper appear"},
+  {n:87,t:"Taskbar", d:"Bar (usually bottom) showing open apps and system tray.", e:"Windows taskbar, macOS Dock"},
+  {n:88,t:"Shortcut", d:"Link/icon that points to a file or program.", e:"Desktop shortcut to MS Word"},
+  {n:89,t:"Recycle Bin / Trash", d:"Folder where deleted files go temporarily.", e:"Right-click → Empty Recycle Bin"},
+  {n:90,t:"Control Panel / Settings", d:"Interface to change system configurations.", e:"Change wallpaper, sound, network settings"},
+  {n:91,t:"Command Prompt / Terminal", d:"Text-based interface to give commands.", e:"cmd on Windows, Terminal on macOS/Linux"},
+  {n:92,t:"File Explorer / Finder", d:"Application to browse files and folders.", e:"This PC (Windows), Finder (macOS)"},
+  {n:93,t:"Copy-Paste", d:"Duplicate content from one place to another.", e:"Ctrl+C → Ctrl+V"},
+  {n:94,t:"Cut-Paste", d:"Move content from one place to another.", e:"Ctrl+X → Ctrl+V"},
+  {n:95,t:"Undo", d:"Reverse the last action.", e:"Ctrl+Z (very useful!)"},
+  {n:96,t:"Redo", d:"Reverse an undo action.", e:"Ctrl+Y"},
+  {n:97,t:"Drag & Drop", d:"Click and move items with mouse.", e:"Move file to folder by dragging"},
+  {n:98,t:"Right-click", d:"Secondary mouse click – opens context menu.", e:"Right-click file → Properties"},
+  {n:99,t:"Double-click", d:"Two quick clicks – opens files/apps.", e:"Double-click Chrome icon to launch"},
+  {n:100,t:"Artificial Intelligence (AI)", d:"Simulation of human intelligence in machines.", e:"ChatGPT, Google Gemini, voice assistants like Siri"}
+];
+
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let timerInterval = null;
+let timeLeft = 20;
+let hasAnswered = false;
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function generateQuestions() {
+  questions = [];
+
+  // 96 MCQ from terms
+  for (let i = 0; i < 96; i++) {
+    const term = terms[i];
+    let wrong = terms.filter((_, idx) => idx !== i).map(t => t.d)
+                     .sort(() => Math.random() - 0.5).slice(0, 3);
+    let allOptions = shuffle([term.d, ...wrong]);
+    const correctIdx = allOptions.indexOf(term.d);
+
+    questions.push({
+      id: i + 1,
+      type: "mcq",
+      question: `What is <strong>${term.t}</strong>?`,
+      options: allOptions,
+      correct: correctIdx,
+      explanation: `✅ ${term.d}<br><strong>Example:</strong> ${term.e}`
+    });
+  }
+
+  // True/False
+  questions.push({
+    id: 97,
+    type: "tf",
+    question: "True or False: <strong>Undo</strong> (Ctrl + Z) reverses the last action.",
+    options: ["True", "False"],
+    correct: 0,
+    explanation: "✅ True! Undo is one of the most useful shortcuts."
+  });
+
+  // Match the following
+  questions.push({
+    id: 98,
+    type: "match",
+    question: "Match the following (easy for children):",
+    left: ["Right-click", "Double-click"],
+    right: ["Opens context menu", "Opens files or apps"],
+    explanation: "✅ Right-click opens menu.<br>Double-click opens files/apps."
+  });
+
+  // HTML & CSS easy questions for children
+  questions.push({
+    id: 99,
+    type: "mcq",
+    question: "What is <strong>HTML</strong>? <span style='color:#e67e22'>(Easy for children)</span>",
+    options: [
+      "HyperText Markup Language – used to make websites",
+      "High Speed Machine Language",
+      "Hard Drive Memory Language",
+      "Hyper Text Modern Language"
+    ],
+    correct: 0,
+    explanation: "✅ HTML is the language that creates the structure of websites!"
+  });
+
+  questions.push({
+    id: 100,
+    type: "tf",
+    question: "True or False: <strong>CSS</strong> is used to add colors, fonts and styles to websites. <span style='color:#e67e22'>(Easy for children)</span>",
+    options: ["True", "False"],
+    correct: 0,
+    explanation: "✅ True! CSS makes websites look beautiful."
+  });
+
+  // Shuffle questions every time
+  questions = shuffle(questions);
+}
+
+function startQuiz() {
+  generateQuestions();
+  currentIndex = 0;
+  score = 0;
+  correctCount = 0;
+  wrongCount = 0;
+
+  document.getElementById("start-screen").classList.remove("active");
+  document.getElementById("quiz-screen").classList.add("active");
+
+  showCurrentQuestion();
+}
+
+function showCurrentQuestion() {
+  hasAnswered = false;
+  const q = questions[currentIndex];
+
+  document.getElementById("q-number").textContent = currentIndex + 1;
+  document.getElementById("question-text").innerHTML = `<h2>Q${currentIndex + 1}: ${q.question}</h2>`;
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("next-btn").style.display = "none";
+
+  timeLeft = 20;
+  updateTimer();
+
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) handleTimeUp();
+  }, 1000);
+
+  const labels = ['A', 'B', 'C', 'D'];
+
+  if (q.type === "mcq" || q.type === "tf") {
+    q.options.forEach((text, i) => {
+      const div = document.createElement("div");
+      div.className = "option";
+      div.innerHTML = `<strong>${labels[i]}.</strong> ${text}`;
+      div.onclick = () => selectAnswer(i);
+      optionsDiv.appendChild(div);
+    });
+  } else if (q.type === "match") {
+    let html = `
+      <div style="background:#f0f7ff;padding:15px;border-radius:8px;">
+        <p><strong>1. ${q.left[0]}</strong> → <select id="m0"><option value="">Select</option><option value="0">${q.right[0]}</option><option value="1">${q.right[1]}</option></select></p>
+        <p><strong>2. ${q.left[1]}</strong> → <select id="m1"><option value="">Select</option><option value="0">${q.right[0]}</option><option value="1">${q.right[1]}</option></select></p>
+      </div>
+      <button onclick="submitMatch()" style="margin-top:15px;padding:12px 30px;background:#3498db;color:white;border:none;border-radius:8px;">Submit Match</button>
+    `;
+    optionsDiv.innerHTML = html;
+  }
+}
+
+function updateTimer() {
+  const el = document.getElementById("timer");
+  el.textContent = `${timeLeft} seconds left`;
+  if (timeLeft <= 5) el.classList.add("low");
+  else el.classList.remove("low");
+}
+
+function selectAnswer(selected) {
+  if (hasAnswered) return;
+  hasAnswered = true;
+  clearInterval(timerInterval);
+
+  const q = questions[currentIndex];
+  const isCorrect = selected === q.correct;
+
+  if (isCorrect) {
+    score++;
+    correctCount++;
+  } else {
+    wrongCount++;
+  }
+
+  const allOptions = document.querySelectorAll(".option");
+  allOptions.forEach((opt, i) => {
+    opt.onclick = null;
+    if (i === q.correct) opt.classList.add("option-correct");
+    if (i === selected && !isCorrect) opt.classList.add("option-wrong");
+  });
+
+  showFeedback(isCorrect, q);
+  updateScoreBar();
+}
+
+function handleTimeUp() {
+  if (hasAnswered) return;
+  hasAnswered = true;
+  wrongCount++;
+
+  const q = questions[currentIndex];
+  const allOptions = document.querySelectorAll(".option");
+  allOptions.forEach((opt, i) => {
+    opt.onclick = null;
+    if (i === q.correct) opt.classList.add("option-correct");
+  });
+
+  showFeedback(false, q, true);
+  updateScoreBar();
+}
+
+function showFeedback(isCorrect, q, timeUp = false) {
+  const fb = document.getElementById("feedback");
+  fb.style.display = "block";
+
+  let msg = timeUp ? 
+    `<p style="color:#e67e22;">⏰ Time's up!</p>` : 
+    (isCorrect ? `<p style="color:#27ae60;">✅ Correct! +1 mark</p>` : `<p style="color:#e74c3c;">❌ Wrong</p>`);
+
+  fb.innerHTML = msg + `<p style="margin-top:10px;">${q.explanation}</p>`;
+  document.getElementById("next-btn").style.display = "inline-block";
+}
+
+function submitMatch() {
+  if (hasAnswered) return;
+  hasAnswered = true;
+  clearInterval(timerInterval);
+
+  const m0 = parseInt(document.getElementById("m0").value);
+  const m1 = parseInt(document.getElementById("m1").value);
+  const isCorrect = (m0 === 0 && m1 === 1) || (m0 === 1 && m1 === 0);
+
+  if (isCorrect) {
+    score++;
+    correctCount++;
+  } else {
+    wrongCount++;
+  }
+
+  document.getElementById("m0").disabled = true;
+  document.getElementById("m1").disabled = true;
+
+  showFeedback(isCorrect, questions[currentIndex]);
+  updateScoreBar();
+}
+
+function updateScoreBar() {
+  document.getElementById("correct-count").textContent = correctCount;
+  document.getElementById("wrong-count").textContent = wrongCount;
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= questions.length) {
+    endQuiz();
+  } else {
+    showCurrentQuestion();
+  }
+}
+
+function endQuiz() {
+  document.getElementById("quiz-screen").classList.remove("active");
+  document.getElementById("end-screen").classList.add("active");
+  
+  document.getElementById("final-score").textContent = `${score} / 100`;
+  
+  let msg = "";
+  const percent = score;
+  if (percent >= 90) msg = "🏆 Outstanding! You are a computer superstar!";
+  else if (percent >= 75) msg = "🎉 Excellent work!";
+  else if (percent >= 60) msg = "👍 Good job! Keep practising.";
+  else if (percent >= 40) msg = "🙂 Nice try! You learned a lot.";
+  else msg = "📚 Great effort! Try again to improve your score.";
+
+  document.getElementById("final-message").innerHTML = msg + `<br>You got <strong>${correctCount}</strong> correct and <strong>${wrongCount}</strong> wrong.`;
+}
+
+function restartQuiz() {
+  document.getElementById("end-screen").classList.remove("active");
+  document.getElementById("start-screen").classList.add("active");
+}
+</script>
+
+</body>
+</html>
